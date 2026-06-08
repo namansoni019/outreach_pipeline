@@ -1,0 +1,8 @@
+[project]
+name = "outreach-pipeline"
+version = "0.1.0"
+description = "Automated cold outreach pipeline: seed domain -> outreach emails."
+requires-python = ">=3.10"
+
+[tool.vercel]
+entrypoint = "outreach.api:app"

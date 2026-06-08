@@ -29,7 +29,7 @@ from outreach.storage import list_runs
 from outreach.utils import sanitize_domain
 from outreach import logger
 
-app = typer.Typer(
+cli_app = typer.Typer(
     name="outreach",
     help="Automated cold outreach pipeline: seed domain -> outreach emails.",
     no_args_is_help=True,
@@ -85,7 +85,7 @@ def _execute_pipeline(
     logger.info(f"Run dir: {summary.run_dir}")
 
 
-@app.command()
+@cli_app.command()
 def run(
     domain: str = typer.Argument(
         ...,
@@ -119,7 +119,7 @@ def run(
     _execute_pipeline(domain, mode, limit, dry_run, yes)
 
 
-@app.command()
+@cli_app.command()
 def history() -> None:
     """Show past pipeline runs."""
     runs = list_runs()
@@ -149,7 +149,7 @@ def history() -> None:
     logger.console.print(table)
 
 
-@app.callback(invoke_without_command=True)
+@cli_app.callback(invoke_without_command=True)
 def main(
     ctx: typer.Context,
     version: bool = typer.Option(
@@ -206,4 +206,4 @@ def main(
 
 
 if __name__ == "__main__":
-    app()
+    cli_app()

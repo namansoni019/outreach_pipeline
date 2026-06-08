@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from outreach.cli import app
+from outreach.cli import cli_app
 from outreach.storage import RUNS_DIR
 
 runner = CliRunner()
@@ -34,7 +34,7 @@ def test_default_run_stops_before_sending(monkeypatch):
     python -m outreach.cli run example.com --mode mock --limit 5
     Should run stages 1-3, generate drafts, save JSON, NOT send anything.
     """
-    result = runner.invoke(app, ["run", "test-default.com", "--mode", "mock", "--limit", "2"])
+    result = runner.invoke(cli_app, ["run", "test-default.com", "--mode", "mock", "--limit", "2"])
     assert result.exit_code == 0
     assert "DRY RUN enabled. Stopping before sending." in result.stdout
     assert "Sending outreach emails..." not in result.stdout
@@ -71,7 +71,7 @@ def test_mock_simulated_send_with_yes(monkeypatch):
     python -m outreach.cli run example.com --mode mock --limit 5 --send --yes
     Should run full pipeline, skip prompt, and simulate send.
     """
-    result = runner.invoke(app, ["run", "test-mock-send.com", "--mode", "mock", "--limit", "2", "--send", "--yes"])
+    result = runner.invoke(cli_app, ["run", "test-mock-send.com", "--mode", "mock", "--limit", "2", "--send", "--yes"])
     assert result.exit_code == 0
     assert "Auto-confirming safety checkpoint (--yes passed)." in result.stdout
     assert "Sending outreach emails..." in result.stdout
@@ -128,7 +128,7 @@ def test_real_mode_ignores_yes(monkeypatch):
     # We expect an exception or abort because OceanClient is None and will fail, but the CLI logic for --yes happens before run_pipeline.
     # Actually, the check is in cli.py before run_pipeline.
     
-    result = runner.invoke(app, ["run", "test-real.com", "--mode", "real", "--limit", "2", "--send", "--yes"])
+    result = runner.invoke(cli_app, ["run", "test-real.com", "--mode", "real", "--limit", "2", "--send", "--yes"])
     
     # It should warn about --yes being ignored
     assert "--yes is ignored in real mode. Safety checkpoint will be shown." in result.stdout
@@ -139,7 +139,7 @@ def test_invalid_domain_does_not_crash():
     python -m outreach.cli run invalid_domain --mode mock --limit 5
     Should not crash. Pipeline should reject the invalid domain gracefully.
     """
-    result = runner.invoke(app, ["run", "invalid_domain", "--mode", "mock", "--limit", "5"])
+    result = runner.invoke(cli_app, ["run", "invalid_domain", "--mode", "mock", "--limit", "5"])
     assert result.exit_code == 0
     assert "Invalid domain" in result.stdout
     # Pipeline should still print a summary table
@@ -152,7 +152,7 @@ def test_storage_consistency_on_dry_run():
     companies.json, decision_makers.json, resolved_contacts.json,
     email_drafts.json, send_results.json, failures.json, summary.json.
     """
-    result = runner.invoke(app, ["run", "test-storage.com", "--mode", "mock", "--limit", "2"])
+    result = runner.invoke(cli_app, ["run", "test-storage.com", "--mode", "mock", "--limit", "2"])
     assert result.exit_code == 0
 
     run_dir_line = [line for line in result.stdout.splitlines() if "Run dir:" in line]

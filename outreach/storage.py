@@ -15,6 +15,7 @@ Output structure per run:
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -32,7 +33,10 @@ from outreach.models import (
     PipelineRunSummary,
 )
 
-RUNS_DIR = PROJECT_ROOT / "runs"
+# On Vercel the filesystem is read-only except /tmp.
+# Set RUNS_DIR_OVERRIDE=/tmp/runs in Vercel Environment Variables.
+_runs_override = os.environ.get("RUNS_DIR_OVERRIDE")
+RUNS_DIR = Path(_runs_override) if _runs_override else PROJECT_ROOT / "runs"
 
 # Canonical filenames for each stage output
 COMPANIES_FILE = "companies.json"

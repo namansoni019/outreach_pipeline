@@ -1,0 +1,12 @@
+# Exclude non-API files from Vercel build
+dashboard/
+tests/
+runs/
+.pytest_cache/
+__pycache__/
+*.md
+.env
+.env.example
+.git/
+requirements-dev.txt
+

@@ -30,6 +30,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def root():
+    return {"status": "ok", "service": "Outreach Pipeline API"}
+
+@app.get("/api/health")
+def health():
+    return {"status": "healthy"}
+
 class RunRequest(BaseModel):
     domain: str
     mode: str = "mock"
